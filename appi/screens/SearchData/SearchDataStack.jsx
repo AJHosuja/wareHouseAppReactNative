@@ -18,7 +18,7 @@ const SearchDataStack = ({ token }) => {
         </Stack.Screen>
         <Stack.Screen 
           name="ItemData"
-          children={ItemData}
+          component={ItemData}
         />
       </Stack.Navigator>
     

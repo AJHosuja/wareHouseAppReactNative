@@ -87,7 +87,7 @@ const SearchData = ({ token, navigation }) => {
         <View style={styles.filteredData}>
           {filteredData.map((value, index) => {
             return (
-              <TouchableOpacity key={index} onPress={() => navigation.navigate("ItemData", { elguide: value.elguideCode })}>
+              <TouchableOpacity key={index} onPress={() => navigation.navigate("ItemData", { elguide: value.elguideCode, token: token })}>
                 <Text style={styles.filteredDataText} >
                   {value.elguideCode}
                 </Text>
