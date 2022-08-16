@@ -1,11 +1,13 @@
 import { View, Text, SafeAreaView } from "react-native";
 import React from "react";
 import SearchData from "./screens/SearchData/SearchData";
-import AddItem from "./screens/AddItem";
+import AddItem from "./screens/AddItem/Componets/AddItem";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchDataStack from "./screens/SearchData/SearchDataStack";
+import AddItemStack from "./screens/AddItem/AddItemStack";
+import Inventory from "./screens/Inventory";
 
 const Home = ({ token }) => {
   const Tab = createBottomTabNavigator();
@@ -41,22 +43,22 @@ const Home = ({ token }) => {
         <Tab.Screen
           options={{ headerShown: false }}
           name="Add item"
-          component={AddItem}
+          component={AddItemStack}
         />
         <Tab.Screen
           options={{ headerShown: false }}
           name="Inventory"
-          component={AddItem}
+          component={AddItemStack}
         />
         <Tab.Screen
           options={{ headerShown: false }}
           name="ChangePassWord"
-          component={AddItem}
+          component={AddItemStack}
         />
         <Tab.Screen
           options={{ headerShown: false }}
           name="LogOut"
-          component={AddItem}
+          component={AddItemStack}
         />
       </Tab.Navigator>
     </NavigationContainer>

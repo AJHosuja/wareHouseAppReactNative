@@ -1,16 +1,56 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Keyboard } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react'
+import { useDispatch, useSelector } from "react-redux"
+import { selectToken } from '../../../features/userSlice';
+import axios from "axios";
 
 const ItemCard = ({itemData, deleteFunction, index}) => {
 
   const [updateRack, setUpdateRack] = useState(false)
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState(itemData.rack)
+  
+  const token = useSelector(selectToken)
 
-  const inputRef = useRef();
+  const updateRackRequest = (id) => {
+    const updateItem = async (id) => {
+      var details = {
+        newRack: value,
+        id: id,
+      };
+  
+      var formBody = [];
+      for (var property in details) {
+        var encodedKey = encodeURIComponent(property);
+        var encodedValue = encodeURIComponent(details[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+      }
+  
+      formBody = formBody.join("&");
+      const config = {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+          'Authorization': `Basic ${token}`
+        },
+      };
+  
+      const URL = "https://warehouseapipower.herokuapp.com" + "/product/updateRack";
+  
+      const requestData = await axios.post(URL, formBody, config);
 
-  useEffect(() => {
-      console.log({inputRef})
-    }, [])
+      if(requestData.data==="true") {
+        return true;
+      }
+      
+    }
+    
+    const succes = updateItem(id);
+
+    if(succes) {
+      setUpdateRack(false)
+    }
+    
+  };
 
   return (
     <View style={styles.card}>
@@ -27,11 +67,10 @@ const ItemCard = ({itemData, deleteFunction, index}) => {
               rack: 
               </Text>
               {!updateRack ?
-              <Text style={[styles.textInCard, {fontWeight: "bold"}]}>{itemData.rack}</Text>
+              <Text style={[styles.textInCard, {fontWeight: "bold"}]}>{value}</Text>
               :
               
               <TextInput
-              ref={inputRef}
               style={styles.inputStyle}
               onChangeText={(e) => {
                 setValue(e)
@@ -40,24 +79,32 @@ const ItemCard = ({itemData, deleteFunction, index}) => {
               /> 
               
               }
+
+              {updateRack && 
+              <TouchableOpacity onPress={() => updateRackRequest(itemData.id)}>
+                    <Text style={styles.updateButton}>Update</Text>
+                </TouchableOpacity>
+                }
               </View>
             <Text style={styles.textInCard}>
               updater: 
               <Text style={{fontWeight: "bold"}}>{" "}{itemData.updater}</Text>
             </Text>
             <View style={styles.buttons}>
+            
                 <TouchableOpacity style={styles.delete} onPress={() => {
-                  deleteFunction(index)
+                  deleteFunction(index, itemData.id)
                 }}>
                     <Text style={styles.buttonsText}>Delete</Text>
                 </TouchableOpacity>
+              
                 {!updateRack ? 
                 <TouchableOpacity onPress={() => setUpdateRack(true)}>
                     <Text style={styles.buttonsText}>Update Rack</Text>
                 </TouchableOpacity>
                 :
                 <TouchableOpacity onPress={() => setUpdateRack(false)}>
-                    <Text style={styles.buttonsText}>Ok</Text>
+                    <Text style={styles.buttonsText}>Cancel</Text>
                 </TouchableOpacity>
                 }
             </View>
@@ -95,6 +142,12 @@ const styles = StyleSheet.create({
         color: "blue",
         fontSize: 18,
         marginBottom: 7,
+    },
+    updateButton: {
+      color: "blue",
+      fontSize: 18,
+      marginLeft: 10,
+      marginTop: 7
     },
     inputStyle: {
       backgroundColor: "#DDDDDD",

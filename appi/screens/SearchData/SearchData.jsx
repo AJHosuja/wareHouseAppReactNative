@@ -8,16 +8,19 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux"
 import axios from "axios";
 import Close from "react-native-vector-icons/AntDesign";
+import { selectToken } from "../../features/userSlice";
 
 //const token =
 //"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFudmkiLCJpYXQiOjE2NTg1MTY3NTgsImV4cCI6MTY1OTEyMTU1OH0.bvaHJpShOzrZAv5CGPLE3GkRs2JgJLpInJJtpomPURA";
 //
-const SearchData = ({ token, navigation }) => {
+const SearchData = ({ navigation }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [typedWord, setTypedWord] = useState("");
   const [filteredData, setFiltereData] = useState([]);
+  const token = useSelector(selectToken)
 
   const getData = async () => {
     const config = {
@@ -34,7 +37,7 @@ const SearchData = ({ token, navigation }) => {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [token]);
 
   const filterData = (e) => {
     const searchWord = e;
@@ -113,7 +116,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontSize: 20,
   },
-  filteredData: {},
   filteredDataText: {
     paddingTop: 5,
     fontSize: 20,

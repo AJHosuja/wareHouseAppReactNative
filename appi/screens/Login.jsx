@@ -9,11 +9,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Spinner from "react-native-loading-spinner-overlay";
 import qs from "qs";
+import { useDispatch } from "react-redux"
+import { addToken } from "../features/userSlice";
 
 const Login = ({ setToken, setLoggedIn }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const login = async () => {
     var details = {
@@ -43,6 +46,7 @@ const Login = ({ setToken, setLoggedIn }) => {
       setToken(loginData.data.token);
       console.log(loginData.data.token);
       setLoggedIn(true);
+      dispatch(addToken(loginData.data.token));
     }
   };
 
@@ -86,7 +90,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignItems: "center",
-    backgroundColor: "#DDDDDD",
+    backgroundColor: "#fff",
     padding: 10,
   },
 });

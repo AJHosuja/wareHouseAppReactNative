@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "appi",
-    "slug": "appi",
+    "name": "Warehouse inventory APP",
+    "slug": "WarehouseinventoryAPP",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anttiju.WarehouseinventoryAPP"
     },
     "android": {
       "adaptiveIcon": {

@@ -2,12 +2,14 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } fr
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ItemCard from './ItemCard';
+import { useDispatch, useSelector } from "react-redux"
+import { selectToken } from '../../../features/userSlice';
 
 const ItemData = ({ navigation, route }) => {
     const elguide = route.params.elguide
-    const token = route.params.token
-
     const [data, setData] = useState([]);
+
+    const token = useSelector(selectToken)
     
     
     const getItemData = async () => {
@@ -29,10 +31,30 @@ const ItemData = ({ navigation, route }) => {
       getItemData();
     }, []);
 
-    const deleteFromArray = (index) => {
-        console.log(index);
-        setData(data.filter((o, i) => index !== i));
-        console.log(data)
+    const deleteFromArray = (index, id) => {
+
+        const deleteRequest = async (id) => {
+          
+          const config = {
+            headers: {
+              'Authorization': `Basic ${token}`
+            },
+          };
+      
+          const URL = "https://warehouseapipower.herokuapp.com" + "/product/" + id;
+      
+          const requestData = await axios.delete(URL, config);
+    
+          if(requestData.data==="true") {
+            return true;
+          }
+        };
+        
+        
+        const success = deleteRequest(id);
+        if(success) {
+          setData(data.filter((o, i) => index !== i));
+        }
     };
 
   return (
