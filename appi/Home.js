@@ -7,7 +7,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchDataStack from "./screens/SearchData/SearchDataStack";
 import AddItemStack from "./screens/AddItem/AddItemStack";
-import Inventory from "./screens/Inventory";
+import Inventory from "./screens/inventory/Inventory";
 
 const Home = ({ token }) => {
   const Tab = createBottomTabNavigator();
@@ -38,7 +38,7 @@ const Home = ({ token }) => {
         <Tab.Screen
           options={{ headerShown: false }}
           name="Home"
-          children={() => <SearchDataStack token={token} />}
+          component={SearchDataStack}
         />
         <Tab.Screen
           options={{ headerShown: false }}
@@ -48,7 +48,7 @@ const Home = ({ token }) => {
         <Tab.Screen
           options={{ headerShown: false }}
           name="Inventory"
-          component={AddItemStack}
+          component={Inventory}
         />
         <Tab.Screen
           options={{ headerShown: false }}

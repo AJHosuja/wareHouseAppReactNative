@@ -6,6 +6,8 @@ import {
   FlatList,
   ScrollView,
   TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux"
@@ -69,6 +71,10 @@ const SearchData = ({ navigation }) => {
     setTypedWord("");
   };
   return (
+    
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={{backgroundColor: "#478bff", height: "100%" , width: "100%"}}>
+
     <View style={styles.container}>
       <View style={styles.inputContainer}>
         <TextInput
@@ -77,7 +83,7 @@ const SearchData = ({ navigation }) => {
           onChangeText={filterData}
           value={typedWord}
           placeholder="Search"
-        />
+          />
         {typedWord.length > 0 && (
           <View style={styles.closeIcon}>
             <TouchableOpacity onPress={clearInputField}>
@@ -100,6 +106,8 @@ const SearchData = ({ navigation }) => {
         </View>
       </ScrollView>
     </View>
+    </View>
+  </TouchableWithoutFeedback>
   );
 };
 
@@ -107,9 +115,10 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     marginTop: 100,
+
   },
   inputStyle: {
-    backgroundColor: "#DDDDDD",
+    backgroundColor: "white",
     width: 265,
     borderRadius: 10,
     height: 50,
@@ -141,7 +150,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#DDDDDD",
+    backgroundColor: "white",
     borderRadius: 10,
     width: 300,
   },

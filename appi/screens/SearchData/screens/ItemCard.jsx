@@ -4,11 +4,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { selectToken } from '../../../features/userSlice';
 import axios from "axios";
 
-const ItemCard = ({itemData, deleteFunction, index}) => {
+const ItemCard = ({itemData, deleteFunction, index, updateArray, ifupdateArray}) => {
 
   const [updateRack, setUpdateRack] = useState(false)
   const [value, setValue] = useState(itemData.rack)
-  
   const token = useSelector(selectToken)
 
   const updateRackRequest = (id) => {
@@ -48,6 +47,9 @@ const ItemCard = ({itemData, deleteFunction, index}) => {
 
     if(succes) {
       setUpdateRack(false)
+      if (ifupdateArray) {
+        updateArray();
+      }
     }
     
   };
@@ -115,8 +117,8 @@ const ItemCard = ({itemData, deleteFunction, index}) => {
 const styles = StyleSheet.create({
     card: {
       marginTop: 10,
-      marginBottom: 40,
-      width: 370,
+      marginBottom: 10,
+      width: 340,
       backgroundColor: "white",
       borderRadius: 4,
       shadowColor: '#171717',

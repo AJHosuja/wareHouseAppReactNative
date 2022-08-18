@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux"
 import { selectToken } from '../../../features/userSlice';
+import CustomModal from '../../alert/CustomModal';
 
 
 const AddItem = ({navigation, route}) => {
@@ -12,6 +13,8 @@ const AddItem = ({navigation, route}) => {
   const [ean, setEan] = useState("");
   const [rack, setRack] = useState("");
   const token = useSelector(selectToken)
+
+  const [alertVisible, setAlertVisible] = useState(false);
 
   const [filteredData, setFiltereData] = useState([]);
 
@@ -115,15 +118,28 @@ const AddItem = ({navigation, route}) => {
 
     const loginURL = "https://warehouseapipower.herokuapp.com" + "/product/";
 
-    const loginData = await axios.post(loginURL, formBody, config);
+    const addItemResponse = await axios.post(loginURL, formBody, config);
 
-    if (loginData.data === "true") {
-      
+    if (addItemResponse.data === "true") {
+      return true;
+    } else {
+      return false;
     }
   }
-
+  
   var addItemFunction = () => {
-    addItem()
+
+    
+    const responseData = addItem()
+    
+    if(responseData) {
+      
+      setAlertVisible(true)
+      setTimeout( () => {
+        setAlertVisible(false);
+      }, 1500)
+
+    }
   };
     
   /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,6 +147,11 @@ const AddItem = ({navigation, route}) => {
   return (
   <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <SafeAreaView style={styles.safeArea} >
+
+      {alertVisible 
+      &&
+      <CustomModal title={"Success!"} isVisible={alertVisible} jsonPath={require('../../alert/assets/success1.json')}/>
+      }
         <View style={styles.formBox}>
 
         <View style={styles.header}>
@@ -173,7 +194,7 @@ const AddItem = ({navigation, route}) => {
         <View style={styles.textInput}>
         <TextInput
         style={styles.textInputField}
-        autoCapitalize={'none'}
+        autoCapitalize={"characters"}
         onChangeText={(value) => setRack(value)}
         value={rack}
         placeholder='Rack'/>

@@ -4,13 +4,14 @@ import axios from "axios";
 import ItemCard from './ItemCard';
 import { useDispatch, useSelector } from "react-redux"
 import { selectToken } from '../../../features/userSlice';
+import CustomModal from '../../alert/CustomModal';
 
 const ItemData = ({ navigation, route }) => {
     const elguide = route.params.elguide
     const [data, setData] = useState([]);
 
     const token = useSelector(selectToken)
-    
+    const [alertVisible, setAlertVisible] = useState(false);
     
     const getItemData = async () => {
       const config = {
@@ -20,10 +21,9 @@ const ItemData = ({ navigation, route }) => {
       };
       
       const url = "https://warehouseapipower.herokuapp.com" + "/product/elguide/" + elguide;
-      console.log(url)
+      
       const dataGot = await axios.get(url, config);
-      console.log("here");
-      console.log(dataGot.data);
+      
       setData(dataGot.data);
     };
 
@@ -53,12 +53,27 @@ const ItemData = ({ navigation, route }) => {
         
         const success = deleteRequest(id);
         if(success) {
-          setData(data.filter((o, i) => index !== i));
-        }
-    };
+          const filteredData= data.filter((o, i) => index !== i);
+          setData(filteredData);
+          console.log(filteredData.length)
+          setAlertVisible(true)
+            setTimeout( () => {
+              setAlertVisible(false);
+              if(filteredData.length === 0) {
+                navigation.navigate("Search")
+              }
+            }, 1000)
+          }
+        };
+
 
   return (
     <SafeAreaView >
+
+      {alertVisible 
+      &&
+      <CustomModal title={"Success!"} isVisible={alertVisible} jsonPath={require('../../alert/assets/success1.json')}/>
+      }
 
     <View style={styles.container}>
       <ScrollView>
