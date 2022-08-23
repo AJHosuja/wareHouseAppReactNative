@@ -10,6 +10,8 @@ import { useIsFocused } from '@react-navigation/native'
 import CustomModal from '../alert/CustomModal';
 
 
+
+
 const Inventory = () => {
   const token = useSelector(selectToken)
   const [letter, setLetter] = useState('A');
@@ -20,6 +22,8 @@ const Inventory = () => {
   const isFocused = useIsFocused();
   const [alertVisible, setAlertVisible] = useState(false);
 
+
+  
 
   const getAllProducts = async () => {
     const config = {
@@ -74,7 +78,7 @@ const Inventory = () => {
       }
         <View>
           <Text style={styles.welcomeText}>
-            Hey! Find items by rack
+            Find items by rack
           </Text>
         </View>
         <ScrollView style={styles.ScrollView}>
@@ -152,7 +156,7 @@ const Inventory = () => {
 
 const styles = StyleSheet.create({
   welcomeText: {
-    marginTop: 20,
+    marginTop: 40,
     fontSize: 30,
   },
   container:{

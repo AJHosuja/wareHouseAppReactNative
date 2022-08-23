@@ -58,7 +58,7 @@ const ItemCard = ({itemData, deleteFunction, index, updateArray, ifupdateArray})
     <View style={styles.card}>
             <Text style={styles.textInCard}>
               elguide: 
-              <Text style={{fontWeight: "bold"}}>{" "}{itemData.elguideCode}</Text>
+              <Text style={{fontWeight: "bold"}}>{" "}{itemData.elguideCode.toUpperCase()}</Text>
             </Text>
             <Text style={styles.textInCard}>
               EAN: 

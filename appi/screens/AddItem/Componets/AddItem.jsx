@@ -3,9 +3,9 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux"
-import { selectToken } from '../../../features/userSlice';
+import { selectToken, selectUser } from '../../../features/userSlice';
 import CustomModal from '../../alert/CustomModal';
-
+import { useIsFocused } from '@react-navigation/native';
 
 const AddItem = ({navigation, route}) => {
   const [data, setData] = useState([])
@@ -13,10 +13,34 @@ const AddItem = ({navigation, route}) => {
   const [ean, setEan] = useState("");
   const [rack, setRack] = useState("");
   const token = useSelector(selectToken)
+  const user = useSelector(selectUser)
+  const isFocused = useIsFocused();
+  const [lastFiveItems, setLastFiveItems] = useState([]);
 
   const [alertVisible, setAlertVisible] = useState(false);
 
   const [filteredData, setFiltereData] = useState([]);
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  const getLastFive = async () => {
+
+    const config = {
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
+    };
+    const url = "https://warehouseapipower.herokuapp.com" + "/lastfive";
+    const dataGet = await axios.get(url, config);
+    setLastFiveItems(dataGet.data);
+  };
+  
+
+
+  useEffect(() => {
+      getLastFive();
+  }, [isFocused])
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // SearchData elguide
@@ -39,6 +63,7 @@ const AddItem = ({navigation, route}) => {
   const clearInputField = () => {
     setFiltereData([]);
     setElguide("");
+    setEan("");
   };
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // compare elguide data to ean
@@ -53,7 +78,7 @@ const AddItem = ({navigation, route}) => {
 
 
   const getData = async () => {
-    console.log(token);
+
     const config = {
       headers: {
         Authorization: `Basic ${token}`,
@@ -67,7 +92,7 @@ const AddItem = ({navigation, route}) => {
 
   useEffect(() => {
       getData();
-  },[])
+  },[isFocused])
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // params from barcode scanner
@@ -77,7 +102,6 @@ const AddItem = ({navigation, route}) => {
       const elguideCode = data.filter(ean => ean.ean === route.params?.ean);
       setEan(route.params?.ean);
       if(elguideCode[0]?.elguide) {
-        console.log(elguideCode[0]);
         setElguide(elguideCode[0].elguide)
       } 
     }
@@ -86,7 +110,6 @@ const AddItem = ({navigation, route}) => {
   useEffect(() => {
     if(route.params?.rack) {
       setRack(route.params?.rack);
-      console.log("here in rack")
     }
   },[route.params?.rack])
 
@@ -97,7 +120,7 @@ const AddItem = ({navigation, route}) => {
       elguideCode: elguide,
       productEAN: ean,
       rack: rack,
-      updater: "testi",
+      updater: user,
     };
 
     var formBody = [];
@@ -129,11 +152,12 @@ const AddItem = ({navigation, route}) => {
   
   var addItemFunction = () => {
 
+    Keyboard.dismiss();
     
     const responseData = addItem()
     
     if(responseData) {
-      
+      getData();
       setAlertVisible(true)
       setTimeout( () => {
         setAlertVisible(false);
@@ -161,7 +185,7 @@ const AddItem = ({navigation, route}) => {
         <View style={styles.textInput}>
         <TextInput
         style={styles.textInputField}
-        value={elguide}
+        value={elguide.toUpperCase()}
         autoCapitalize={"characters"}
         onChangeText={filterData}
         placeholder='Elguide Code'/>
@@ -214,33 +238,61 @@ const AddItem = ({navigation, route}) => {
           </View>
         </TouchableOpacity>
 
-          </View>
-        {filteredData.length != 0 &&
-        <View style={[styles.scrollView, styles.shadow]}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 12 }}>
-        <View>
-          {filteredData.slice(0,10).map((value, index) => {
-            return (
-              <TouchableOpacity key={index} onPress={() => {
-                setElguide(value.elguide)
-
-                filteredData.map((data) => {
-                  console.log(data)
-                  if (value.elguide === data.elguide) {
-                      setEan(data.ean)
-                  }})
-                  setFiltereData([]);
-              }}>
-                <Text style={styles.filteredDataText} >
-                  {value.elguide}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
         </View>
-      </ScrollView>
-      </View>
+
+        <View style={styles.bottomContainers}>
+        <View style={styles.lastFive}>
+          
+          <Text style={styles.lastFiveHeader}>Last 5 added</Text>
+        { lastFiveItems.map((data, index) => {
+          return(
+            <Text key={index} style={styles.lastFiveText}>
+            {data.elguideCode}
+            </Text>
+            )
+          })
         }
+          </View>
+
+          <View style={styles.lastFive}>
+          
+          <Text style={styles.lastFiveHeader}>Rack items</Text>
+          {lastFiveItems.map((data, index) => {
+            return(
+              <Text key={index} style={styles.lastFiveText}>
+            {data.elguideCode}
+            </Text>
+            )
+          })
+        }
+          </View>
+        </View>
+    {filteredData.length != 0 &&
+    <View style={[styles.scrollView, styles.shadow]}>
+    <ScrollView contentContainerStyle={{ paddingBottom: 12 }}>
+    <View>
+      {filteredData.slice(0,10).map((value, index) => {
+        return (
+          <TouchableOpacity key={index} onPress={() => {
+            setElguide(value.elguide)
+    
+            filteredData.map((data) => {
+              console.log(data)
+              if (value.elguide === data.elguide) {
+                  setEan(data.ean)
+              }})
+              setFiltereData([]);
+          }}>
+            <Text style={styles.filteredDataText} >
+              {value.elguide.toUpperCase()}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+    </ScrollView>
+    </View>
+    }
     </SafeAreaView>
   </TouchableWithoutFeedback>
   )
@@ -250,17 +302,17 @@ const AddItem = ({navigation, route}) => {
 const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: "#478bff",
-    justifyContent: "center",
     alignItems: "center",
     height: "100%"
   },
   formBox: {
     alignitem: "center",
-    position: "absolute",
     top: 100,
     borderRadius: 5,
     backgroundColor: "white",
     paddingBottom: 20,
+    width: 360, 
+    marginBottom: 150
   },
   textInput: {
     flexDirection: "row",
@@ -268,17 +320,17 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginHorizontal: 30,
     padding: 10,
-    fontSize: 18,
+    fontSize: 16,
     height: 50,
     width: 300,
     backgroundColor: "#dbdbdb",
     borderRadius: 2
   },
   textInputField: {
-    fontSize: 20,
+    fontSize: 19,
     backgroundColor: "#dbdbdb",
     borderRadius: 2,
-    width: "90%"
+    width: "90%",
   },
   header: {
     marginTop: 10,
@@ -290,18 +342,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     height: 38,
     borderRadius: 10,
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: "center"
   },
   addButtonText: {
-    fontSize: 30,
-    color: "white"
+    fontSize: 25,
+    color: "white",
 
   },
   scrollView: {
    backgroundColor: "#fffffd",
     position: "absolute",
     width: 300,
-    top: 200,
+    top: 260,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     marginTop: 5,
@@ -311,7 +364,6 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     fontSize: 20,
     marginTop: 2,
-    fontSize: 20,
     marginLeft: 10,
     marginBottom: 5,
   },
@@ -321,5 +373,27 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
+  bottomContainers: {
+    flexDirection: "row",
+    width: 360,  
+    justifyContent: "space-between",
+  },
+  lastFiveText: {
+    padding: 3,
+    fontSize: 17
+  },
+  lastFiveHeader:{
+    padding: 3,
+    fontSize: 25,
+    fontWeight: "bold",
+    textDecorationLine: 'underline'
+  },
+  lastFive: {
+    width: 170,
+    backgroundColor: "white",
+    borderRadius: 5,
+    paddingBottom: 10
+  }
+
 });
 export default AddItem

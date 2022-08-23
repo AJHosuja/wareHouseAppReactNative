@@ -8,29 +8,39 @@ import {
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Spinner from "react-native-loading-spinner-overlay";
-import qs from "qs";
-import { useDispatch } from "react-redux"
-import { addToken } from "../features/userSlice";
+import { useDispatch } from "react-redux";
+import { addToken, addUpdater, addAdmin } from "../features/userSlice";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Login = ({ setToken, setLoggedIn }) => {
+const Login = ({ setLoggedIn }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  let isMounted = true;
 
-  const login = async () => {
-    var details = {
+
+  useEffect(() => {
+    return () => {
+      isMounted = false;
+    };
+  },[])
+
+
+  const loginRequest = () => {
+      setIsLoading(true)
+      var details = {
       user: userName,
       password: password,
     };
-
+  
     var formBody = [];
     for (var property in details) {
       var encodedKey = encodeURIComponent(property);
       var encodedValue = encodeURIComponent(details[property]);
       formBody.push(encodedKey + "=" + encodedValue);
     }
-
+  
     formBody = formBody.join("&");
     const config = {
       headers: {
@@ -38,61 +48,90 @@ const Login = ({ setToken, setLoggedIn }) => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     };
-
+   
     const loginURL = "https://warehouseapipower.herokuapp.com" + "/login";
+      axios.post(loginURL, formBody, config).then((response) => {
+        console.log(response.data)
+        if (response.data.token) {
+          if (isMounted) {
+            dispatch(addAdmin(response.data.admin));
+            dispatch(addToken(response.data.token));
+            dispatch(addUpdater(response.data.userName));
+            const token = response.data.token;
+            AsyncStorage.setItem('token', token);
+            AsyncStorage.setItem('userName', response.data.userName);
+            setLoggedIn(true);
+            setIsLoading(false)
+          }
+        }});
+        
 
-    const loginData = await axios.post(loginURL, formBody, config);
-    if (loginData) {
-      setToken(loginData.data.token);
-      console.log(loginData.data.token);
-      setLoggedIn(true);
-      dispatch(addToken(loginData.data.token));
-    }
-  };
-
-  useEffect(() => {
-    console.log(isLoading);
-  }, [isLoading]);
+    
+  }
 
   return (
-    <View>
-      <Spinner visible={isLoading} />
-      <Text>User Name</Text>
+    <View style={styles.container}>
+      {isLoading &&
+      <Spinner visible={true} />
+      }
+      <View>
+        <Text style={styles.headerText}>
+          Warehouse {"\n"} Inventory
+        </Text>
+      </View>
       <TextInput
         style={styles.input}
         placeholder="User Name"
+        placeholderTextColor="#b5b5b5"
         onChangeText={setUserName}
         value={userName}
       />
-      <Text>Password</Text>
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#b5b5b5"
         secureTextEntry={true}
         onChangeText={setPassword}
         value={password}
       />
-      <TouchableOpacity style={styles.button} onPress={login}>
-        <Text>Press Here</Text>
+      <TouchableOpacity style={styles.button} onPress={loginRequest}>
+        <Text>Log In</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor:"#478bff",
+    flex: 1,
+    alignItems: "center",
+  },
   input: {
-    height: 40,
+    marginTop: 20,
+    height: 50,
     width: 300,
-    borderWidth: 1,
-    borderRadius: 2,
+    borderRadius: 10,
     margin: 1,
     paddingLeft: 10,
+    color: "white",
+    backgroundColor: "#465881"
   },
   button: {
+    marginTop: 40,
+    height: 50,
+    width: 300,
+    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     padding: 10,
+    borderRadius: 10,
   },
+  headerText: {
+    fontSize: 40,
+    marginTop: 150,
+    marginBottom: 50
+  }
 });
 
 export default Login;

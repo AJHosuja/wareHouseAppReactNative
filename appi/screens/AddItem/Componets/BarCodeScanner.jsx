@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { Camera, CameraType, BarCodeScanningResult, FlashMode } from 'expo-camera';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { Touchable } from 'react-native-web';
 
 const BarCode = ({navigation, route}) => {
-
+  const [type, setType] = useState(CameraType.back);
   const [scanned, setScanned] = useState(false);
   const [scanType, setScanType] = useState("");
+  const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
 
+  const [permission, requestPermission] = Camera.useCameraPermissions();
   
   const askForCameraPermission = () => {
     (async () => {
@@ -45,20 +50,46 @@ const BarCode = ({navigation, route}) => {
         params: { rack: data },
         merge: true,
       });
-    }
+    } 
   };
+
+  
 
 
   return (
     <View style={styles.container}>
     <View style={styles.barcodebox}>
-      <BarCodeScanner
+      <Camera type={type} flashMode={flash} 
       onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-      style={{ height: 400, width: 400 }} />
+      style={{ height: 400, width: 400 }} 
+      />
     </View>
+    <TouchableOpacity onPress={() => 
+              {setFlash(
+                flash === Camera.Constants.FlashMode.off
+                  ? Camera.Constants.FlashMode.torch
+                  : Camera.Constants.FlashMode.off);}}>
+
+    <View style={styles.flashcontainer}>
+      {flash === Camera.Constants.FlashMode.off ?  
+      <Ionicons name={"ios-flashlight"} style={{fontSize: 30}}/>
+      :
+      <Ionicons name={"ios-flashlight-outline"} style={{fontSize: 30}}/>
+      }
+    </View>
+
+    </TouchableOpacity>
+
   </View>
   )
 }
+/*
+<BarCodeScanner
+onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+style={{ height: 400, width: 400 }} 
+hitSlop={true}
+/>
+*/
 
 const styles = StyleSheet.create({
     container: {
@@ -79,6 +110,15 @@ const styles = StyleSheet.create({
       overflow: 'hidden',
       borderRadius: 30,
       backgroundColor: 'tomato'
+    },
+    flashcontainer:{
+      marginTop: 20,
+      backgroundColor: "white",
+      height: 100,
+      width: 100,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 5
     }
   });
 

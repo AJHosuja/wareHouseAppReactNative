@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  FlatList,
   ScrollView,
   TouchableOpacity,
   Keyboard,
@@ -13,16 +12,16 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux"
 import axios from "axios";
 import Close from "react-native-vector-icons/AntDesign";
-import { selectToken } from "../../features/userSlice";
+import { selectToken } from "../../../features/userSlice";
+import { useIsFocused } from '@react-navigation/native';
 
-//const token =
-//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFudmkiLCJpYXQiOjE2NTg1MTY3NTgsImV4cCI6MTY1OTEyMTU1OH0.bvaHJpShOzrZAv5CGPLE3GkRs2JgJLpInJJtpomPURA";
-//
+
 const SearchData = ({ navigation }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [typedWord, setTypedWord] = useState("");
   const [filteredData, setFiltereData] = useState([]);
   const token = useSelector(selectToken)
+  const isFocused = useIsFocused();
 
   const getData = async () => {
     const config = {
@@ -39,7 +38,7 @@ const SearchData = ({ navigation }) => {
 
   useEffect(() => {
     getData();
-  }, [token]);
+  }, [isFocused]);
 
   const filterData = (e) => {
     const searchWord = e;
@@ -98,7 +97,7 @@ const SearchData = ({ navigation }) => {
             return (
               <TouchableOpacity key={index} onPress={() => navigation.navigate("ItemData", { elguide: value.elguideCode, token: token })}>
                 <Text style={styles.filteredDataText} >
-                  {value.elguideCode}
+                  {value.elguideCode.toUpperCase()}
                 </Text>
               </TouchableOpacity>
             );

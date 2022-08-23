@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "Warehouse inventory APP",
-    "slug": "WarehouseinventoryAPP",
+    "name": "Warehouse Inventory",
+    "slug": "warehouseinventoryappv1",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/index.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#478bff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -23,12 +23,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/index.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.anttiju.WarehouseinventoryAPP"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/index.png"
+    },
+    "description": ""
   }
 }

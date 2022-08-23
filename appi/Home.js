@@ -1,15 +1,13 @@
-import { View, Text, SafeAreaView } from "react-native";
 import React from "react";
-import SearchData from "./screens/SearchData/SearchData";
-import AddItem from "./screens/AddItem/Componets/AddItem";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchDataStack from "./screens/SearchData/SearchDataStack";
 import AddItemStack from "./screens/AddItem/AddItemStack";
 import Inventory from "./screens/inventory/Inventory";
+import More from "./screens/More/More";
 
-const Home = ({ token }) => {
+const Home = ({ setLoggedIn }) => {
   const Tab = createBottomTabNavigator();
   return (
     <NavigationContainer>
@@ -26,8 +24,10 @@ const Home = ({ token }) => {
               iconName = focused ? "server" : "server";
             } else if (route.name === "ChangePassWord") {
               iconName = focused ? "reload" : "reload";
-            } else if (route.name === "LogOut") {
-              iconName = focused ? "exit" : "exit-outline";
+            } else if (route.name === "More") {
+              iconName = focused
+                ? "ellipsis-horizontal"
+                : "ellipsis-horizontal-outline";
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -50,19 +50,20 @@ const Home = ({ token }) => {
           name="Inventory"
           component={Inventory}
         />
+
         <Tab.Screen
           options={{ headerShown: false }}
-          name="ChangePassWord"
-          component={AddItemStack}
-        />
-        <Tab.Screen
-          options={{ headerShown: false }}
-          name="LogOut"
-          component={AddItemStack}
+          name="More"
+          children={() => <More setLoggedIn={setLoggedIn} />}
         />
       </Tab.Navigator>
     </NavigationContainer>
   );
 };
 
+/*<Tab.Screen
+  options={{ headerShown: false }}
+  name="ChangePassWord"
+  component={AddItemStack}
+/>*/
 export default Home;
