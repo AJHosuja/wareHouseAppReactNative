@@ -5,7 +5,7 @@ import Home from "../Home";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { addToken, addUpdater } from "../features/userSlice";
+import { addAdmin, addToken, addUpdater } from "../features/userSlice";
 import Spinner from "react-native-loading-spinner-overlay";
 
 
@@ -19,30 +19,41 @@ const MainScreen = () => {
   const getToken = async () => {
     const token = await AsyncStorage.getItem("token");
     const userName = await AsyncStorage.getItem("userName");
-    
+    console.log("here")
     if (token !== null && userName !== null) {
       setIsLoading(true)
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 5000)
       const config = {
         headers: {
           Authorization: `Basic ${token}`,
         },
       };
-      const url =
-      "https://warehouseapipower.herokuapp.com" + "/token/" + userName;
+      const url = "https://warehouseapipower.herokuapp.com" + "/token/" + userName;
       const tokenValidation = await axios.get(url, config);
       if (tokenValidation.data.success) {
-        
+        console.log(tokenValidation.data)
         dispatch(addToken(tokenValidation.data.token));
         dispatch(addUpdater(tokenValidation.data.user));
         await AsyncStorage.setItem("token", tokenValidation.data.token);
+        if(tokenValidation.data.admin) {
+          dispatch(addAdmin(tokenValidation.data.admin));
+        }
+
         setIsLoading(false)
         setLoggedIn(true);
+      } else {
+        setIsLoading(false)
+        setLoggedIn(false);
       }
+
+
+
     } else {
       setIsLoading(false)
       setLoggedIn(false);
     }
-    
   };
 
   useEffect(() => {

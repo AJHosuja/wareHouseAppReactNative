@@ -1,4 +1,4 @@
-import { View,ScrollView, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity,TouchableWithoutFeedback, Keyboard } from 'react-native'
+import { View, ScrollView, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -7,7 +7,7 @@ import { selectToken, selectUser } from '../../../features/userSlice';
 import CustomModal from '../../alert/CustomModal';
 import { useIsFocused } from '@react-navigation/native';
 
-const AddItem = ({navigation, route}) => {
+const AddItem = ({ navigation, route }) => {
   const [data, setData] = useState([])
   const [elguide, setElguide] = useState("");
   const [ean, setEan] = useState("");
@@ -35,11 +35,11 @@ const AddItem = ({navigation, route}) => {
     const dataGet = await axios.get(url, config);
     setLastFiveItems(dataGet.data);
   };
-  
+
 
 
   useEffect(() => {
-      getLastFive();
+    getLastFive();
   }, [isFocused])
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,14 +52,14 @@ const AddItem = ({navigation, route}) => {
 
     const newFilter = data.filter((val) => {
       return val.elguide.toLowerCase().includes(searchWord.toLowerCase());
-  })
-  if (searchWord === "") {
+    })
+    if (searchWord === "") {
       setFiltereData([]);
-  } else {
+    } else {
       setFiltereData(newFilter);
-  }
+    }
   };
-  
+
   const clearInputField = () => {
     setFiltereData([]);
     setElguide("");
@@ -91,27 +91,27 @@ const AddItem = ({navigation, route}) => {
 
 
   useEffect(() => {
-      getData();
-  },[isFocused])
+    getData();
+  }, [isFocused])
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // params from barcode scanner
 
   useEffect(() => {
-    if(route.params?.ean) {
+    if (route.params?.ean) {
       const elguideCode = data.filter(ean => ean.ean === route.params?.ean);
       setEan(route.params?.ean);
-      if(elguideCode[0]?.elguide) {
+      if (elguideCode[0]?.elguide) {
         setElguide(elguideCode[0].elguide)
-      } 
+      }
     }
-  },[route.params?.ean])
+  }, [route.params?.ean])
 
   useEffect(() => {
-    if(route.params?.rack) {
+    if (route.params?.rack) {
       setRack(route.params?.rack);
     }
-  },[route.params?.rack])
+  }, [route.params?.rack])
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Add item request
@@ -149,152 +149,141 @@ const AddItem = ({navigation, route}) => {
       return false;
     }
   }
-  
+
   var addItemFunction = () => {
 
     Keyboard.dismiss();
-    
+
     const responseData = addItem()
-    
-    if(responseData) {
+
+    if (responseData) {
       getData();
+      getLastFive();
       setAlertVisible(true)
-      setTimeout( () => {
+      setTimeout(() => {
         setAlertVisible(false);
       }, 1500)
 
     }
   };
-    
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   return (
-  <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-    <SafeAreaView style={styles.safeArea} >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.safeArea} >
 
-      {alertVisible 
-      &&
-      <CustomModal title={"Success!"} isVisible={alertVisible} jsonPath={require('../../alert/assets/success1.json')}/>
-      }
+        {alertVisible
+          &&
+          <CustomModal title={"Success!"} isVisible={alertVisible} jsonPath={require('../../alert/assets/success1.json')} />
+        }
         <View style={styles.formBox}>
 
-        <View style={styles.header}>
-        <Text style={{fontWeight: "bold", fontSize: 30, paddingLeft: 40, paddingRight: 40}}>Hey, Add Item </Text>
-        </View>
+          <View style={styles.header}>
+            <Text style={{ fontWeight: "bold", fontSize: 30, paddingLeft: 40, paddingRight: 40 }}>Hey, Add Item </Text>
+          </View>
 
-        <View style={styles.textInput}>
-        <TextInput
-        style={styles.textInputField}
-        value={elguide.toUpperCase()}
-        autoCapitalize={"characters"}
-        onChangeText={filterData}
-        placeholder='Elguide Code'/>
+          <View style={styles.textInput}>
+            <TextInput
+              style={styles.textInputField}
+              value={elguide.toUpperCase()}
+              autoCapitalize={"characters"}
+              onChangeText={filterData}
+              placeholder='Elguide Code' />
 
-        {elguide.length > 0 && (
-          <View style={styles.closeIcon}>
-            <TouchableOpacity onPress={clearInputField}>
-            <Ionicons name={"close"} style={{fontSize: 30}}/>
+            {elguide.length > 0 && (
+              <View style={styles.closeIcon}>
+                <TouchableOpacity onPress={clearInputField}>
+                  <Ionicons name={"close"} style={{ fontSize: 30 }} />
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+
+          <View style={styles.textInput}>
+            <TextInput
+              style={styles.textInputField}
+              autoCapitalize={'none'}
+              onChangeText={(value) => setEan(value)}
+              value={ean}
+              placeholder='EAN' />
+            <TouchableOpacity onPress={() => navigation.navigate({
+              name: 'Barcode',
+              params: { type: "ean" },
+              merge: true,
+            })}>
+              <Ionicons name={"camera"} style={{ fontSize: 30 }} />
             </TouchableOpacity>
+
           </View>
-        )}
-        </View>
+          <View style={styles.textInput}>
+            <TextInput
+              style={styles.textInputField}
+              autoCapitalize={"characters"}
+              onChangeText={(value) => setRack(value)}
+              value={rack}
+              placeholder='Rack' />
+            <TouchableOpacity onPress={() => navigation.navigate({
+              name: 'Barcode',
+              params: { type: "rack" },
+              merge: true,
+            })}>
+              <Ionicons name={"camera"} style={{ fontSize: 30 }} />
+            </TouchableOpacity>
 
-        <View style={styles.textInput}>
-        <TextInput
-        style={styles.textInputField}
-        autoCapitalize={'none'}
-        onChangeText={(value) => setEan(value)}
-        value={ean}
-        placeholder='EAN'/>
-        <TouchableOpacity onPress={() => navigation.navigate({
-          name: 'Barcode',
-          params: { type: "ean" },
-          merge: true,
-        })}>
-          <Ionicons name={"camera"} style={{fontSize: 30}}/>
-        </TouchableOpacity>
 
-        </View>
-        <View style={styles.textInput}>
-        <TextInput
-        style={styles.textInputField}
-        autoCapitalize={"characters"}
-        onChangeText={(value) => setRack(value)}
-        value={rack}
-        placeholder='Rack'/>
-        <TouchableOpacity onPress={() => navigation.navigate({
-          name: 'Barcode',
-          params: { type: "rack" },
-          merge: true,
-        })}>
-          <Ionicons name={"camera"} style={{fontSize: 30}}/>
-        </TouchableOpacity>
-
-      
-        </View>
-        <TouchableOpacity style={styles.addButton} onPress={addItemFunction}>
-          <View>
-            <Text style={styles.addButtonText}>Add item</Text>
           </View>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.addButton} onPress={addItemFunction}>
+            <View>
+              <Text style={styles.addButtonText}>Add item</Text>
+            </View>
+          </TouchableOpacity>
 
         </View>
 
         <View style={styles.bottomContainers}>
-        <View style={styles.lastFive}>
-          
-          <Text style={styles.lastFiveHeader}>Last 5 added</Text>
-        { lastFiveItems.map((data, index) => {
-          return(
-            <Text key={index} style={styles.lastFiveText}>
-            {data.elguideCode}
-            </Text>
-            )
-          })
-        }
+          <View style={styles.lastFive}>
+
+            <Text style={styles.lastFiveHeader}>Last 5 added</Text>
+            {lastFiveItems.map((data, index) => {
+              return (
+                <Text key={index} style={styles.lastFiveText}>
+                  {data.elguideCode}
+                </Text>
+              )
+            })
+            }
           </View>
 
-          <View style={styles.lastFive}>
-          
-          <Text style={styles.lastFiveHeader}>Rack items</Text>
-          {lastFiveItems.map((data, index) => {
-            return(
-              <Text key={index} style={styles.lastFiveText}>
-            {data.elguideCode}
-            </Text>
-            )
-          })
-        }
-          </View>
         </View>
-    {filteredData.length != 0 &&
-    <View style={[styles.scrollView, styles.shadow]}>
-    <ScrollView contentContainerStyle={{ paddingBottom: 12 }}>
-    <View>
-      {filteredData.slice(0,10).map((value, index) => {
-        return (
-          <TouchableOpacity key={index} onPress={() => {
-            setElguide(value.elguide)
-    
-            filteredData.map((data) => {
-              console.log(data)
-              if (value.elguide === data.elguide) {
-                  setEan(data.ean)
-              }})
-              setFiltereData([]);
-          }}>
-            <Text style={styles.filteredDataText} >
-              {value.elguide.toUpperCase()}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-    </ScrollView>
-    </View>
-    }
-    </SafeAreaView>
-  </TouchableWithoutFeedback>
+        {filteredData.length != 0 &&
+          <View style={[styles.scrollView, styles.shadow]}>
+            <ScrollView contentContainerStyle={{ paddingBottom: 12 }}>
+              <View>
+                {filteredData.slice(0, 10).map((value, index) => {
+                  return (
+                    <TouchableOpacity key={index} onPress={() => {
+                      setElguide(value.elguide)
+
+                      filteredData.map((data) => {
+                        console.log(data)
+                        if (value.elguide === data.elguide) {
+                          setEan(data.ean)
+                        }
+                      })
+                      setFiltereData([]);
+                    }}>
+                      <Text style={styles.filteredDataText} >
+                        {value.elguide.toUpperCase()}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
+        }
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 
@@ -311,7 +300,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "white",
     paddingBottom: 20,
-    width: 360, 
+    width: 360,
     marginBottom: 150
   },
   textInput: {
@@ -335,7 +324,7 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 10,
   },
-  
+
   addButton: {
     backgroundColor: "#478bff",
     marginTop: 20,
@@ -351,7 +340,7 @@ const styles = StyleSheet.create({
 
   },
   scrollView: {
-   backgroundColor: "#fffffd",
+    backgroundColor: "#fffffd",
     position: "absolute",
     width: 300,
     top: 260,
@@ -375,14 +364,14 @@ const styles = StyleSheet.create({
   },
   bottomContainers: {
     flexDirection: "row",
-    width: 360,  
+    width: 360,
     justifyContent: "space-between",
   },
   lastFiveText: {
     padding: 3,
     fontSize: 17
   },
-  lastFiveHeader:{
+  lastFiveHeader: {
     padding: 3,
     fontSize: 25,
     fontWeight: "bold",

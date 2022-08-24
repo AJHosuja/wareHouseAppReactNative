@@ -11,11 +11,13 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useDispatch } from "react-redux";
 import { addToken, addUpdater, addAdmin } from "../features/userSlice";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomModal from "./alert/CustomModal";
 
 const Login = ({ setLoggedIn }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
   const dispatch = useDispatch();
   let isMounted = true;
 
@@ -24,23 +26,23 @@ const Login = ({ setLoggedIn }) => {
     return () => {
       isMounted = false;
     };
-  },[])
+  }, [])
 
 
   const loginRequest = () => {
-      setIsLoading(true)
-      var details = {
+    setIsLoading(true)
+    var details = {
       user: userName,
       password: password,
     };
-  
+
     var formBody = [];
     for (var property in details) {
       var encodedKey = encodeURIComponent(property);
       var encodedValue = encodeURIComponent(details[property]);
       formBody.push(encodedKey + "=" + encodedValue);
     }
-  
+
     formBody = formBody.join("&");
     const config = {
       headers: {
@@ -48,31 +50,42 @@ const Login = ({ setLoggedIn }) => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     };
-   
-    const loginURL = "https://warehouseapipower.herokuapp.com" + "/login";
-      axios.post(loginURL, formBody, config).then((response) => {
-        console.log(response.data)
-        if (response.data.token) {
-          if (isMounted) {
-            dispatch(addAdmin(response.data.admin));
-            dispatch(addToken(response.data.token));
-            dispatch(addUpdater(response.data.userName));
-            const token = response.data.token;
-            AsyncStorage.setItem('token', token);
-            AsyncStorage.setItem('userName', response.data.userName);
-            setLoggedIn(true);
-            setIsLoading(false)
-          }
-        }});
-        
 
-    
+    const loginURL = "https://warehouseapipower.herokuapp.com" + "/login";
+    axios.post(loginURL, formBody, config).then((response) => {
+      console.log(response.data)
+      if (response.data.token) {
+        if (isMounted) {
+          dispatch(addAdmin(response.data.admin));
+          dispatch(addToken(response.data.token));
+          dispatch(addUpdater(response.data.userName));
+          const token = response.data.token;
+          AsyncStorage.setItem('token', token);
+          AsyncStorage.setItem('userName', response.data.userName);
+          setLoggedIn(true);
+          setIsLoading(false)
+        }
+      } else {
+        setIsLoading(false)
+        setAlertVisible(true)
+        setTimeout(() => {
+          setAlertVisible(false);
+        }, 1500)
+      }
+    });
+
+
+
   }
 
   return (
     <View style={styles.container}>
       {isLoading &&
-      <Spinner visible={true} />
+        <Spinner visible={true} />
+      }
+      {alertVisible
+        &&
+        <CustomModal title={"Invalid!"} isVisible={alertVisible} jsonPath={require("./alert/assets/failed.json")} />
       }
       <View>
         <Text style={styles.headerText}>
@@ -85,6 +98,7 @@ const Login = ({ setLoggedIn }) => {
         placeholderTextColor="#b5b5b5"
         onChangeText={setUserName}
         value={userName}
+        autoCapitalize='none'
       />
       <TextInput
         style={styles.input}
@@ -93,6 +107,7 @@ const Login = ({ setLoggedIn }) => {
         secureTextEntry={true}
         onChangeText={setPassword}
         value={password}
+        autoCapitalize='none'
       />
       <TouchableOpacity style={styles.button} onPress={loginRequest}>
         <Text>Log In</Text>
@@ -103,7 +118,7 @@ const Login = ({ setLoggedIn }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:"#478bff",
+    backgroundColor: "#478bff",
     flex: 1,
     alignItems: "center",
   },

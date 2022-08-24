@@ -117,7 +117,7 @@ const Inventory = () => {
         />
 
       <ButtonToggleGroup
-        textStyle={{fontSize: 20, color: "black"}}
+        textStyle={{fontSize: 9, color: "black"}}
         style={styles.buttonGroup2}
         highlightBackgroundColor={'blue'}
         highlightTextColor={'white'}
