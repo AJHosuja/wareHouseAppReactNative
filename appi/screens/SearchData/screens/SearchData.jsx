@@ -14,6 +14,7 @@ import axios from "axios";
 import Close from "react-native-vector-icons/AntDesign";
 import { selectToken } from "../../../features/userSlice";
 import { useIsFocused } from '@react-navigation/native';
+import {API_URL} from "@env"
 
 
 const SearchData = ({ navigation }) => {
@@ -30,7 +31,7 @@ const SearchData = ({ navigation }) => {
       },
     };
 
-    const url = "https://warehouseapipower.herokuapp.com" + "/product/";
+    const url = API_URL + "/product/";
 
     const dataGet = await axios.get(url, config);
     setAllProducts(dataGet.data);

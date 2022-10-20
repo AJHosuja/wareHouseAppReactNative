@@ -7,6 +7,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addAdmin, addToken, addUpdater } from "../features/userSlice";
 import Spinner from "react-native-loading-spinner-overlay";
+import { API_URL } from "@env"
 
 
 const MainScreen = () => {
@@ -30,14 +31,14 @@ const MainScreen = () => {
           Authorization: `Basic ${token}`,
         },
       };
-      const url = "https://warehouseapipower.herokuapp.com" + "/token/" + userName;
+      const url = API_URL + "/token/" + userName;
       const tokenValidation = await axios.get(url, config);
       if (tokenValidation.data.success) {
         console.log(tokenValidation.data)
         dispatch(addToken(tokenValidation.data.token));
         dispatch(addUpdater(tokenValidation.data.user));
         await AsyncStorage.setItem("token", tokenValidation.data.token);
-        if(tokenValidation.data.admin) {
+        if (tokenValidation.data.admin) {
           dispatch(addAdmin(tokenValidation.data.admin));
         }
 
@@ -61,19 +62,19 @@ const MainScreen = () => {
   }, []);
 
   if (loggedIn) {
-  return <Home setLoggedIn={setLoggedIn}/>;
+    return <Home setLoggedIn={setLoggedIn} />;
   } else {
     return (
-        <>
+      <>
         {isLoading &&
           <Spinner visible={true} />
         }
         <Login setLoggedIn={setLoggedIn} />
-        </>
+      </>
     )
   }
 
-  
+
 }
 
 export default MainScreen

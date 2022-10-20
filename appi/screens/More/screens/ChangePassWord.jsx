@@ -13,6 +13,7 @@ import CustomModal from '../../alert/CustomModal';
 import { useDispatch, useSelector } from "react-redux"
 import { selectToken, selectUser } from "../../../features/userSlice";
 import axios from "axios";
+import {API_URL} from "@env"
 
 const ChangePassWord = () => {
 
@@ -56,7 +57,7 @@ const ChangePassWord = () => {
                     },
                 };
 
-                const URL = "https://warehouseapipower.herokuapp.com" + "/usermgn/" + "changePass";
+                const URL = API_URL + "/usermgn/" + "changePass";
                 const passwordChaneResponse = await axios.post(URL, formBody, config);
 
                 if (passwordChaneResponse.data == true) {

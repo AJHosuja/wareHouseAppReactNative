@@ -5,6 +5,7 @@ import { selectToken } from "../../../features/userSlice";
 import axios from "axios";
 import { useIsFocused } from '@react-navigation/native'
 import CustomModal from '../../alert/CustomModal';
+import {API_URL} from "@env"
 
 const ManageAccounts = () => {
     const [allUsers, setAllUsers] = useState([])
@@ -20,7 +21,7 @@ const ManageAccounts = () => {
                 Authorization: `Basic ${token}`,
             },
         };
-        const url = "https://warehouseapipower.herokuapp.com" + "/usermgn";
+        const url = API_URL + "/usermgn";
         const dataGet = await axios.get(url, config);
 
         setAllUsers(dataGet.data)
@@ -57,7 +58,7 @@ const ManageAccounts = () => {
             },
         };
 
-        const URL = "https://warehouseapipower.herokuapp.com" + "/usermgn/";
+        const URL = API_URL + "/usermgn/";
         const addUserResponse = await axios.post(URL, formBody, config);
         getAllProducts();
         if (addUserResponse.data) {
@@ -94,7 +95,7 @@ const ManageAccounts = () => {
                                 Authorization: `Basic ${token}`,
                             },
                         };
-                        const url = "https://warehouseapipower.herokuapp.com" + "/usermgn/" + id;
+                        const url = API_URL + "/usermgn/" + id;
                         const deleteData = await axios.delete(url, config);
                         if (deleteData.data) {
                             getAllProducts();
@@ -150,7 +151,7 @@ const ManageAccounts = () => {
                             },
                         };
 
-                        const URL = "https://warehouseapipower.herokuapp.com" + "/usermgn/" + "resetPass";
+                        const URL = API_URL + "/usermgn/" + "resetPass";
                         const passwordReseteResponse = await axios.post(URL, formBody, config);
                         if (passwordReseteResponse.data === true) {
                             console.log(passwordReseteResponse.data)

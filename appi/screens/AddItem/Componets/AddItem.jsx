@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { selectToken, selectUser } from '../../../features/userSlice';
 import CustomModal from '../../alert/CustomModal';
 import { useIsFocused } from '@react-navigation/native';
+import { API_URL } from "@env"
 
 const AddItem = ({ navigation, route }) => {
   const [data, setData] = useState([])
@@ -31,7 +32,7 @@ const AddItem = ({ navigation, route }) => {
         Authorization: `Basic ${token}`,
       },
     };
-    const url = "https://warehouseapipower.herokuapp.com" + "/lastfive";
+    const url = API_URL + "/lastfive";
     const dataGet = await axios.get(url, config);
     setLastFiveItems(dataGet.data);
   };
@@ -84,7 +85,7 @@ const AddItem = ({ navigation, route }) => {
         Authorization: `Basic ${token}`,
       },
     };
-    const url = "https://warehouseapipower.herokuapp.com" + "/product/eanelguide";
+    const url = API_URL + "/product/eanelguide";
     const dataGet = await axios.get(url, config);
     setData(dataGet.data);
   };
@@ -139,9 +140,9 @@ const AddItem = ({ navigation, route }) => {
       },
     };
 
-    const loginURL = "https://warehouseapipower.herokuapp.com" + "/product/";
+    const addItemURL = API_URL + "/product/";
 
-    const addItemResponse = await axios.post(loginURL, formBody, config);
+    const addItemResponse = await axios.post(addItemURL, formBody, config);
 
     if (addItemResponse.data === "true") {
       return true;

@@ -8,7 +8,7 @@ import axios from "axios";
 import ItemCard from '../SearchData/screens/ItemCard';
 import { useIsFocused } from '@react-navigation/native'
 import CustomModal from '../alert/CustomModal';
-
+import {API_URL} from "@env"
 
 
 
@@ -31,7 +31,7 @@ const Inventory = () => {
         Authorization: `Basic ${token}`,
       },
     };
-    const url = "https://warehouseapipower.herokuapp.com" + "/product/all/";
+    const url = API_URL + "/product/all/";
     const dataGet = await axios.get(url, config);
     
     setData(dataGet.data)
@@ -50,7 +50,7 @@ const Inventory = () => {
         },
       };
   
-      const URL = "https://warehouseapipower.herokuapp.com" + "/product/" + id;
+      const URL = API_URL + "/product/" + id;
       const requestData = await axios.delete(URL, config);
       if(requestData.data==="true") {
         return true;

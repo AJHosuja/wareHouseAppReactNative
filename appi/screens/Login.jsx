@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { addToken, addUpdater, addAdmin } from "../features/userSlice";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomModal from "./alert/CustomModal";
+import { API_URL } from "@env"
 
 const Login = ({ setLoggedIn }) => {
   const [userName, setUserName] = useState("");
@@ -23,6 +24,7 @@ const Login = ({ setLoggedIn }) => {
 
 
   useEffect(() => {
+    console.log(API_URL)
     return () => {
       isMounted = false;
     };
@@ -51,7 +53,7 @@ const Login = ({ setLoggedIn }) => {
       },
     };
 
-    const loginURL = "https://warehouseapipower.herokuapp.com" + "/login";
+    const loginURL = API_URL + "/login";
     axios.post(loginURL, formBody, config).then((response) => {
       console.log(response.data)
       if (response.data.token) {
